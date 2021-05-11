@@ -8,9 +8,10 @@ public class Main{
 
     public static void main(String[] args) throws VertexAlreadyExistsException, NoSuchVertexException, AdjacencyAlreadyExistsException {
 
-        TicTacToe ticTacToe = new TicTacToe(15);
+        TicTacToe ticTacToe = new TicTacToe(3);
 
         ticTacToe.startInterface();
+        ticTacToe.printGrid();
 
     }
 }
