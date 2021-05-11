@@ -2,11 +2,6 @@ package murilo.ghignatti;
 
 import exceptions.NoSuchVertexException;
 
-/**
- * The MiniMax algorithm optimised with Alpha-Beta pruning.
- *
- * @author DavidHurst
- */
 public class MiniMaxAlphaBeta {
 
     private static final int MAX_DEPTH = 12;
@@ -14,22 +9,6 @@ public class MiniMaxAlphaBeta {
     private MiniMaxAlphaBeta() {
     }
 
-    /**
-     * Play moves on the board alternating between playing as X and O analysing 
-     * the board each time to return the value of the highest value move for the
-     * X player. Use variables alpha and beta as the best alternative for the 
-     * maximising player (X) and the best alternative for the minimising player 
-     * (O) respectively, do not search descendants of nodes if player's 
-     * alternatives are better than the node. Return the highest value move when 
-     * a terminal node or the maximum search depth is reached.
-     * @param board Board to play on and evaluate
-     * @param depth  
-     * @param alpha The best alternative for the maximising player (X)
-     * @param beta The best alternative for the minimising player (O)
-     * @param isMax Maximising or minimising player 
-     * @return Value of the board 
-     * @throws NoSuchVertexException
-     */
     public static int miniMax(TicTacToe board, int depth, int alpha, int beta,
             boolean isMax) throws NoSuchVertexException {
         //int boardVal = evaluateBoard(board);
@@ -85,12 +64,6 @@ public class MiniMaxAlphaBeta {
         }
     }
 
-    /**
-     * Evaluate every legal move on the board and return the best one.
-     * @param board Board to evaluate
-     * @return Coordinates of best move
-     * @throws NoSuchVertexException
-     */
     public static int[] getBestMove(TicTacToe board) throws NoSuchVertexException {
         int[] bestMove = new int[]{-1, -1};
         int bestValue = Integer.MIN_VALUE;
@@ -115,73 +88,4 @@ public class MiniMaxAlphaBeta {
         }
         return bestMove;
     }
-
-    /**
-     * Evaluate the given board from the perspective of the X player, return 
-     * 10 if a winning board configuration is found, -10 for a losing one and 0 
-     * for a draw.
-     * @param board Board to evaluate
-     * @return value of the board
-     */
-    /*
-    private static int evaluateBoard(Board board) {
-        int rowSum = 0;
-        int bWidth = board.getWidth();
-        int Xwin = X.getMark() * bWidth;
-        int Owin = O.getMark() * bWidth;
-
-        // Check rows for winner.
-        for (int row = 0; row < bWidth; row++) {
-            for (int col = 0; col < bWidth; col++) {
-                rowSum += board.getMarkAt(row, col).getMark();
-            }
-            if (rowSum == Xwin) {
-                return 10;
-            } else if (rowSum == Owin) {
-                return -10;
-            }
-            rowSum = 0;
-        }
-
-        // Check columns for winner.
-        rowSum = 0;
-        for (int col = 0; col < bWidth; col++) {
-            for (int row = 0; row < bWidth; row++) {
-                rowSum += board.getMarkAt(row, col).getMark();
-            }
-            if (rowSum == Xwin) {
-                return 10;
-            } else if (rowSum == Owin) {
-                return -10;
-            }
-            rowSum = 0;
-        }
-
-        // Check diagonals for winner.
-        // Top-left to bottom-right diagonal.
-        rowSum = 0;
-        for (int i = 0; i < bWidth; i++) {
-            rowSum += board.getMarkAt(i, i).getMark();
-        }
-        if (rowSum == Xwin) {
-            return 10;
-        } else if (rowSum == Owin) {
-            return -10;
-        }
-
-        // Top-right to bottom-left diagonal.
-        rowSum = 0;
-        int indexMax = bWidth - 1;
-        for (int i = 0; i <= indexMax; i++) {
-            rowSum += board.getMarkAt(i, indexMax - i).getMark();
-        }
-        if (rowSum == Xwin) {
-            return 10;
-        } else if (rowSum == Owin) {
-            return -10;
-        }
-
-        return 0;
-    }
-    */
 }
