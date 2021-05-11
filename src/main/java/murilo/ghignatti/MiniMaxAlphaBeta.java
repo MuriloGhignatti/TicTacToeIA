@@ -4,7 +4,7 @@ import exceptions.NoSuchVertexException;
 
 public class MiniMaxAlphaBeta {
 
-    private static final int MAX_DEPTH = 12;
+    private static final int MAX_DEPTH = 7;
 
     private MiniMaxAlphaBeta() {
     }

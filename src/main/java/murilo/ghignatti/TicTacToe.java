@@ -8,7 +8,7 @@ import exceptions.VertexAlreadyExistsException;
 import graph.Graph;
 import graph.Vertex;
 
-enum gamestate{
+enum GameState{
     START,
     END,
     WAIT,
