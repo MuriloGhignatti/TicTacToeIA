@@ -59,7 +59,7 @@ public class TicTacToe{
                             else if(!graph.getVertex(l + "," + c).existAdjacency((l - 1) + "," + c))
                                 graph.createAdjacency(l + "," + c, (l - 1) + "," + c);
                             break;
-                        //DOWN        
+                        //DOWN
                         case 1:
                             if(l + 1 >= gameSize)
                                 break;
@@ -80,7 +80,7 @@ public class TicTacToe{
                             else if(!graph.getVertex(l + "," + c).existAdjacency(l + "," + (c + 1)))
                                 graph.createAdjacency(l + "," + c, l + "," + (c + 1));
                             break;
-                        //Primary Diagonal    
+                        //Primary Diagonal
                         case 4:
                             if(l - 1 < 0 || c - 1 < 0)
                                 break;
@@ -136,10 +136,10 @@ public class TicTacToe{
         boolean result = mark(pos1 - 1, pos2 - 1, O);
         return result;
     }
-   
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      * <code>{@value #X}</code> if cross won;
      * <code>{@value #O}</code> if circle won;
      * <code>-1</code> if no one won
@@ -299,8 +299,8 @@ public class TicTacToe{
                         System.out.print("O ");
                         continue;
                     default:
-                        System.out.print("- ");  
-                        continue;  
+                        System.out.print("- ");
+                        continue;
                 }
             }
         }
@@ -361,7 +361,7 @@ public class TicTacToe{
                     if(sc.nextLine().equalsIgnoreCase("Y"))
                         break;
                     else
-                        state = gamestate.CLOSE;    
+                        state = gamestate.CLOSE;
                     break;
                 case CLOSE:
                     System.out.println("Thanks for playing :D");
