@@ -350,7 +350,7 @@ public class TicTacToe{
 
     public void startInterface() throws NumberFormatException, NoSuchVertexException, AdjacencyAlreadyExistsException, VertexAlreadyExistsException {
         Scanner sc = new Scanner(System.in);
-        gamestate state  = gamestate.START;
+        GameState state  = GameState.START;
         byte lastPlayer = -1;
         byte winner = -1;
         byte playerToStart = X;
@@ -365,30 +365,30 @@ public class TicTacToe{
                         lastPlayer = O;
                     else
                         lastPlayer = X;
-                    state = gamestate.WAIT;
+                    state = GameState.WAIT;
                     break;
                 case END:
                     printWinnerGrid(winner);
                     System.out.print("Game ended, want to play again (Y/N)? ");
                     if(sc.nextLine().equalsIgnoreCase("Y"))
-                        state = gamestate.START;
+                        state = GameState.START;
                     else
-                        state = gamestate.CLOSE;
+                        state = GameState.CLOSE;
                     break;
                 case WAIT:
                     if((winner = checkWinner()) != -1 && winner != -2)
-                        state = gamestate.END;
+                        state = GameState.END;
                     else if(lastPlayer == X)
-                        state = gamestate.CIRCLE;
+                        state = GameState.CIRCLE;
                     else
-                        state = gamestate.CROSS;
+                        state = GameState.CROSS;
                     /*System.out.println("Ready (Y/N)? ");
                     if(sc.nextLine().equalsIgnoreCase("Y"))
                         break;*/
                     if(true)
                         break;
                     else
-                        state = gamestate.CLOSE;
+                        state = GameState.CLOSE;
                     break;
                 case CLOSE:
                     System.out.println("Thanks for playing :D");
@@ -400,7 +400,7 @@ public class TicTacToe{
                         break;
                     }
                     lastPlayer = X;
-                    state = gamestate.WAIT;
+                    state = GameState.WAIT;
                     break;
                 case CIRCLE:
                     if(!circlePlay(sc)){
@@ -408,7 +408,7 @@ public class TicTacToe{
                         break;
                     }
                     lastPlayer = O;
-                    state = gamestate.WAIT;
+                    state = GameState.WAIT;
                     break;
                 default:
                     break;
