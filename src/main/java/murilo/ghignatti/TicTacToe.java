@@ -8,7 +8,7 @@ import exceptions.VertexAlreadyExistsException;
 import graph.Graph;
 import graph.Vertex;
 
-enum gamestate{
+enum GameState{
     START,
     END,
     WAIT,
@@ -19,8 +19,9 @@ enum gamestate{
 
 public class TicTacToe{
 
-    private static final byte X = 1;
-    private static final byte O = 2;
+    private static final byte X     = 2;
+    private static final byte O     = 1;
+    private static final byte BLANK = 0;
 
     private byte[][] gameGrid;
     private int maxMarks;
@@ -35,8 +36,7 @@ public class TicTacToe{
         this.gameGrid = new byte[gameSize][gameSize];
         this.maxMarks = gameSize * gameSize;
         this.marks = 0;
-        initGraph();
-        graph.generateGraphmlFile("test");
+        //initGraph();
     }
 
     private void initGraph() throws VertexAlreadyExistsException, NoSuchVertexException, AdjacencyAlreadyExistsException{
@@ -116,13 +116,17 @@ public class TicTacToe{
             return false;
         }
         //This position was already used before
-        else if(gameGrid[pos1][pos2] != 0){
+        else if(gameGrid[pos1][pos2] != 0 && option != BLANK){
             return false;
         }
         else{
             gameGrid[pos1][pos2] = option;
-            graph.getVertex(pos1+","+pos2).setLabel(String.valueOf(option));
-            marks++;
+            if(graph != null)
+                graph.getVertex(pos1+","+pos2).setLabel(String.valueOf(option));
+            if(option == BLANK)
+                marks--;
+            else
+                marks++;
             return true;
         }
     }
@@ -137,6 +141,10 @@ public class TicTacToe{
         return result;
     }
 
+    public boolean markBlank(int pos1, int pos2) throws NoSuchVertexException{
+        boolean result = mark(pos1 - 1, pos2 - 1, BLANK);
+        return result;
+    }
     /**
      *
      * @return
@@ -146,11 +154,8 @@ public class TicTacToe{
      * <code>-2</code> if the game ended with a tie.
      */
     public byte checkWinner(){
-        if(marks == maxMarks){
-            System.out.println(Const.TIE);
-            printGrid();
-            System.exit(0);
-        }
+        if(marks == maxMarks)
+            return -2;
         else{
             byte winner = -1;
             //Check Line
@@ -313,17 +318,37 @@ public class TicTacToe{
         System.out.println("");
         String[] line = sc.nextLine().split("(\\,|\\s)");
         return markCircle(Integer.parseInt(line[0]), Integer.parseInt(line[1]));
+        /*int[] line = MiniMaxAlphaBeta.getBestMove(TicTacToe.this);
+        System.out.println(line[0] + " " + line[1]);
+        return markCircle(line[0], line[1]);*/
     }
 
-    private boolean crossPlay(Scanner sc) throws NumberFormatException, NoSuchVertexException{
+    private boolean crossPlay(Scanner sc) throws NumberFormatException, NoSuchVertexException, AdjacencyAlreadyExistsException, VertexAlreadyExistsException {
+        printGrid();
+
+        TicTacToe temp = new TicTacToe(gameGrid.length);
+        temp.changeGrid(getGrid());
+        int[] line = MiniMaxAlphaBeta.getBestMove(temp);
+        return markCross(line[0]+1, line[1]+1);
+        /*
         printGrid();
         System.out.print("Please, input your desired location to mark (L,C or L C): ");
         String[] line = sc.nextLine().split("(\\,|\\s)");
         System.out.println("");
-        return markCross(Integer.parseInt(line[0]), Integer.parseInt(line[1]));
+        return markCross(Integer.parseInt(line[0]), Integer.parseInt(line[1]));*/
+    }
+    
+    public byte[][] getGrid(){
+        byte[][] tempGrid = new byte[gameGrid.length][gameGrid.length];
+        for (int i = 0; i < tempGrid.length; i++) {
+            for (int j = 0; j < tempGrid[i].length; j++) {
+                tempGrid[i][j] = gameGrid[i][j];
+            }
+        }
+        return tempGrid;
     }
 
-    public void startInterface() throws NumberFormatException, NoSuchVertexException{
+    public void startInterface() throws NumberFormatException, NoSuchVertexException, AdjacencyAlreadyExistsException, VertexAlreadyExistsException {
         Scanner sc = new Scanner(System.in);
         gamestate state  = gamestate.START;
         byte lastPlayer = -1;
@@ -357,8 +382,10 @@ public class TicTacToe{
                         state = gamestate.CIRCLE;
                     else
                         state = gamestate.CROSS;
-                    System.out.println("Ready (Y/N)? ");
+                    /*System.out.println("Ready (Y/N)? ");
                     if(sc.nextLine().equalsIgnoreCase("Y"))
+                        break;*/
+                    if(true)
                         break;
                     else
                         state = gamestate.CLOSE;
@@ -388,5 +415,22 @@ public class TicTacToe{
             }
         }
         System.exit(1);
+    }
+    
+    //MiniMax
+    public int getWidth(){
+        return gameGrid.length;
+    }
+
+    public boolean isMarked(int row, int col){
+        return gameGrid[row][col] != 0;
+    }
+
+    public boolean anyMovesAvailable(){
+        return marks < maxMarks;
+    }
+    
+    public void changeGrid(byte[][] newGrid){
+        gameGrid = newGrid;
     }
 }
