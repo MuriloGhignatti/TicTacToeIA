@@ -2,89 +2,138 @@ package murilo.ghignatti;
 
 import exceptions.NoSuchVertexException;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-
-import static murilo.ghignatti.TicTacToe.*;
+/**
+ * The MiniMax algorithm optimised with Alpha-Beta pruning.
+ *
+ * @author DavidHurst
+ */
 public class MiniMaxAlphaBeta {
-    private static final int MAX_DEPTH = 28; //12
 
-    private MiniMaxAlphaBeta(){
+    private static final int MAX_DEPTH = 12;
+
+    private MiniMaxAlphaBeta() {
     }
+
+    /**
+     * Play moves on the board alternating between playing as X and O analysing 
+     * the board each time to return the value of the highest value move for the
+     * X player. Use variables alpha and beta as the best alternative for the 
+     * maximising player (X) and the best alternative for the minimising player 
+     * (O) respectively, do not search descendants of nodes if player's 
+     * alternatives are better than the node. Return the highest value move when 
+     * a terminal node or the maximum search depth is reached.
+     * @param board Board to play on and evaluate
+     * @param depth  
+     * @param alpha The best alternative for the maximising player (X)
+     * @param beta The best alternative for the minimising player (O)
+     * @param isMax Maximising or minimising player 
+     * @return Value of the board 
+     * @throws NoSuchVertexException
+     */
     public static int miniMax(TicTacToe board, int depth, int alpha, int beta,
-                              boolean isMax) throws NoSuchVertexException {
-        int boardValue = board.checkWinner();
-        if( boardValue == 2 || boardValue == 1
-            || depth == 0
-            || !board.anyMovesAvailable()){
-            return boardValue;
-        }
-        if(isMax){
-            int highestValue = Integer.MIN_VALUE;
-            for(int row = 0; row < board.getWidth();row++){
+            boolean isMax) throws NoSuchVertexException {
+        //int boardVal = evaluateBoard(board);
+        int boardVal = board.checkWinner();
+
+        // Terminal node (win/lose/draw) or max depth reached.
+        //if (Math.abs(boardVal) == 10 || depth == 0 || !board.anyMovesAvailable()) {
+          if((boardVal == 1 || boardVal == 2) || depth == 0 || !board.anyMovesAvailable())
+              return boardVal;
+
+        // Maximising player, find the maximum attainable value.
+        if (isMax) {
+            int highestVal = Integer.MIN_VALUE;
+            for (int row = 0; row < board.getWidth(); row++) {
                 for (int col = 0; col < board.getWidth(); col++) {
-                    if(!board.isMarked(row,col)){
-                        board.markCross(row+1,col+1);
-                        highestValue = Math.max(highestValue,miniMax(
-                            board,depth-1, alpha, beta,false));
-                        board.markBlank(row+1,col+1);
-                        alpha = Math.max(alpha, highestValue);
-                        if(alpha >= beta){
-                            System.out.println("teste");
-                            return highestValue;
+                    //if (!board.isTileMarked(row, col)) {
+                      if(!board.isMarked(row, col)){
+                        //board.setMarkAt(row, col, X);
+                        board.markCross(row+1, col+1);
+                        highestVal = Math.max(highestVal, miniMax(board,
+                                depth - 1, alpha, beta, false));
+                        //board.setMarkAt(row, col, BLANK);
+                        board.markBlank(row+1, col+1);
+                        alpha = Math.max(alpha, highestVal);
+                        if (alpha >= beta) {
+                            return highestVal;
                         }
                     }
                 }
             }
-            return highestValue;
-        }
-        else{
-            int lowestValue = Integer.MAX_VALUE;
-            for (int i = 0; i < board.getWidth(); i++) {
-                for (int j = 0; j < board.getWidth(); j++) {
-                    if(!board.isMarked(i,j)){
-                        board.markCircle(i+1,j+1);
-                        lowestValue = Math.min(lowestValue,miniMax(
-                            board,depth-1, alpha, beta,true));
-                        board.markBlank(i+1,j+1);
-                        beta = Math.min(beta,lowestValue);
-                        if(beta <= alpha){
-                            return lowestValue;
+            return highestVal;
+            // Minimising player, find the minimum attainable value;
+        } else {
+            int lowestVal = Integer.MAX_VALUE;
+            for (int row = 0; row < board.getWidth(); row++) {
+                for (int col = 0; col < board.getWidth(); col++) {
+                    //if (!board.isTileMarked(row, col)) {
+                      if(!board.isMarked(row, col)){  
+                        //board.setMarkAt(row, col, O);
+                        board.markCircle(row+1, col+1);
+                        lowestVal = Math.min(lowestVal, miniMax(board,
+                                depth - 1, alpha, beta, true));
+                        //board.setMarkAt(row, col, BLANK);
+                        board.markBlank(row+1, col+1);
+                        beta = Math.min(beta, lowestVal);
+                        if (beta <= alpha) {
+                            return lowestVal;
                         }
                     }
                 }
             }
-             return lowestValue;
-            }
+            return lowestVal;
         }
-        public static int[] getBestMove(TicTacToe board) throws NoSuchVertexException {
-            int [] bestMove = new int[]{-1, -1};
-            int bestValue = Integer.MIN_VALUE;
-            for (int i = 0; i < board.getWidth(); i++) {
-                for (int j = 0; j < board.getWidth(); j++) {
-                    if(!board.isMarked(i,j)){
-                        board.markCross(i+1,j+1);
-                        int moveValue = miniMax(board,MAX_DEPTH,Integer.MIN_VALUE,
+    }
+
+    /**
+     * Evaluate every legal move on the board and return the best one.
+     * @param board Board to evaluate
+     * @return Coordinates of best move
+     * @throws NoSuchVertexException
+     */
+    public static int[] getBestMove(TicTacToe board) throws NoSuchVertexException {
+        int[] bestMove = new int[]{-1, -1};
+        int bestValue = Integer.MIN_VALUE;
+
+        for (int row = 0; row < board.getWidth(); row++) {
+            for (int col = 0; col < board.getWidth(); col++) {
+                //if (!board.isTileMarked(row, col)) {
+                  if(!board.isMarked(row, col)){
+                    //board.setMarkAt(row, col, X);
+                    board.markCross(row+1, col+1);
+                    int moveValue = miniMax(board, MAX_DEPTH, Integer.MIN_VALUE,
                             Integer.MAX_VALUE, false);
-                        board.markBlank(i+1,j+1);
-                        if(moveValue > bestValue){
-                            bestMove[0] = i;
-                            bestMove[1] = j;
-                            bestValue = moveValue;
-                        }
+                    //board.setMarkAt(row, col, BLANK);
+                    board.markBlank(row+1, col+1);
+                    if (moveValue > bestValue) {
+                        bestMove[0] = row;
+                        bestMove[1] = col;
+                        bestValue = moveValue;
                     }
                 }
             }
-            return bestMove;
         }
-    private static int evaluateBoard(TicTacToe board) {
+        return bestMove;
+    }
+
+    /**
+     * Evaluate the given board from the perspective of the X player, return 
+     * 10 if a winning board configuration is found, -10 for a losing one and 0 
+     * for a draw.
+     * @param board Board to evaluate
+     * @return value of the board
+     */
+    /*
+    private static int evaluateBoard(Board board) {
         int rowSum = 0;
         int bWidth = board.getWidth();
-        int Xwin = 'X' * bWidth;
-        int Owin = 'O' * bWidth;
+        int Xwin = X.getMark() * bWidth;
+        int Owin = O.getMark() * bWidth;
+
         // Check rows for winner.
         for (int row = 0; row < bWidth; row++) {
             for (int col = 0; col < bWidth; col++) {
-                rowSum += board.getMarkAt(row, col);
+                rowSum += board.getMarkAt(row, col).getMark();
             }
             if (rowSum == Xwin) {
                 return 10;
@@ -98,7 +147,7 @@ public class MiniMaxAlphaBeta {
         rowSum = 0;
         for (int col = 0; col < bWidth; col++) {
             for (int row = 0; row < bWidth; row++) {
-                rowSum += board.getMarkAt(row, col);
+                rowSum += board.getMarkAt(row, col).getMark();
             }
             if (rowSum == Xwin) {
                 return 10;
@@ -112,7 +161,7 @@ public class MiniMaxAlphaBeta {
         // Top-left to bottom-right diagonal.
         rowSum = 0;
         for (int i = 0; i < bWidth; i++) {
-            rowSum += board.getMarkAt(i, i);
+            rowSum += board.getMarkAt(i, i).getMark();
         }
         if (rowSum == Xwin) {
             return 10;
@@ -124,7 +173,7 @@ public class MiniMaxAlphaBeta {
         rowSum = 0;
         int indexMax = bWidth - 1;
         for (int i = 0; i <= indexMax; i++) {
-            rowSum += board.getMarkAt(i, indexMax - i);
+            rowSum += board.getMarkAt(i, indexMax - i).getMark();
         }
         if (rowSum == Xwin) {
             return 10;
@@ -134,4 +183,5 @@ public class MiniMaxAlphaBeta {
 
         return 0;
     }
-    }
+    */
+}

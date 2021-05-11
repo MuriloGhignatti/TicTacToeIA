@@ -1,6 +1,5 @@
 package murilo.ghignatti;
 
-import java.nio.file.ProviderNotFoundException;
 import java.util.Scanner;
 
 import exceptions.AdjacencyAlreadyExistsException;
@@ -8,9 +7,6 @@ import exceptions.NoSuchVertexException;
 import exceptions.VertexAlreadyExistsException;
 import graph.Graph;
 import graph.Vertex;
-import sun.security.krb5.internal.Ticket;
-
-import javax.xml.transform.Source;
 
 enum gamestate{
     START,
@@ -23,8 +19,9 @@ enum gamestate{
 
 public class TicTacToe{
 
-    private static final byte X = 1;
-    private static final byte O = 2;
+    private static final byte X     = 2;
+    private static final byte O     = 1;
+    private static final byte BLANK = 0;
 
     private byte[][] gameGrid;
     private int maxMarks;
@@ -39,8 +36,7 @@ public class TicTacToe{
         this.gameGrid = new byte[gameSize][gameSize];
         this.maxMarks = gameSize * gameSize;
         this.marks = 0;
-        initGraph();
-        graph.generateGraphmlFile("test");
+        //initGraph();
     }
 
     private void initGraph() throws VertexAlreadyExistsException, NoSuchVertexException, AdjacencyAlreadyExistsException{
@@ -120,13 +116,17 @@ public class TicTacToe{
             return false;
         }
         //This position was already used before
-        else if(gameGrid[pos1][pos2] != 0){
+        else if(gameGrid[pos1][pos2] != 0 && option != BLANK){
             return false;
         }
         else{
             gameGrid[pos1][pos2] = option;
-            graph.getVertex(pos1+","+pos2).setLabel(String.valueOf(option));
-            marks++;
+            if(graph != null)
+                graph.getVertex(pos1+","+pos2).setLabel(String.valueOf(option));
+            if(option == BLANK)
+                marks--;
+            else
+                marks++;
             return true;
         }
     }
@@ -142,8 +142,7 @@ public class TicTacToe{
     }
 
     public boolean markBlank(int pos1, int pos2) throws NoSuchVertexException{
-        byte blank = 0;
-        boolean result = mark(pos1 - 1, pos2 - 1, blank);
+        boolean result = mark(pos1 - 1, pos2 - 1, BLANK);
         return result;
     }
     /**
@@ -338,6 +337,7 @@ public class TicTacToe{
         System.out.println("");
         return markCross(Integer.parseInt(line[0]), Integer.parseInt(line[1]));*/
     }
+    
     public byte[][] getGrid(){
         byte[][] tempGrid = new byte[gameGrid.length][gameGrid.length];
         for (int i = 0; i < tempGrid.length; i++) {
@@ -416,38 +416,21 @@ public class TicTacToe{
         }
         System.exit(1);
     }
+    
     //MiniMax
     public int getWidth(){
         return gameGrid.length;
     }
+
     public boolean isMarked(int row, int col){
-        if(gameGrid[row][col] != 0){
-            return true;
-        }
-        return false;
+        return gameGrid[row][col] != 0;
     }
+
     public boolean anyMovesAvailable(){
-        for (int i = 0; i < gameGrid.length; i++) {
-            for (int j = 0; j < gameGrid[i].length; j++) {
-                if(gameGrid[i][j] == 0){
-                    return true;
-                }
-            }
-        }
-        return false;
+        return marks < maxMarks;
     }
+    
     public void changeGrid(byte[][] newGrid){
         gameGrid = newGrid;
-    }
-    public char getMarkAt(int i, int j){
-        if(gameGrid[i][j] == 1){
-            return 'X';
-        }
-        else if(gameGrid[i][j] == 2){
-            return 'O';
-        }
-        else{
-            return ' ';
-        }
     }
 }
