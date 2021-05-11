@@ -1,4 +1,4 @@
-package murilo.ghignatti;
+package gsn;
 
 public class Const {
 

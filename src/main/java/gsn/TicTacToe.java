@@ -1,4 +1,4 @@
-package murilo.ghignatti;
+package gsn;
 
 import java.util.Scanner;
 
@@ -328,7 +328,7 @@ public class TicTacToe{
 
         TicTacToe temp = new TicTacToe(gameGrid.length);
         temp.changeGrid(getGrid());
-        int[] line = MiniMaxAlphaBeta.getBestMove(temp);
+        int[] line = MiniMaxAlphaBeta.getBestCoord(temp);
         return markCross(line[0]+1, line[1]+1);
         /*
         printGrid();
@@ -337,7 +337,7 @@ public class TicTacToe{
         System.out.println("");
         return markCross(Integer.parseInt(line[0]), Integer.parseInt(line[1]));*/
     }
-    
+
     public byte[][] getGrid(){
         byte[][] tempGrid = new byte[gameGrid.length][gameGrid.length];
         for (int i = 0; i < tempGrid.length; i++) {
@@ -416,7 +416,7 @@ public class TicTacToe{
         }
         System.exit(1);
     }
-    
+
     //MiniMax
     public int getWidth(){
         return gameGrid.length;
@@ -429,7 +429,7 @@ public class TicTacToe{
     public boolean anyMovesAvailable(){
         return marks < maxMarks;
     }
-    
+
     public void changeGrid(byte[][] newGrid){
         gameGrid = newGrid;
     }
