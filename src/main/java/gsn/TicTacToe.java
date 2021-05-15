@@ -132,9 +132,8 @@ public class TicTacToe{
     }
 
     public boolean markCross(int pos1, int pos2) throws NoSuchVertexException{
-        //boolean result = mark(pos1 - 1, pos2 - 1, X);
-        //return result;
-        return true;
+        boolean result = mark(pos1 - 1, pos2 - 1, X);
+        return result;
     }
 
     public boolean markCircle(int pos1, int pos2) throws NoSuchVertexException{
@@ -202,26 +201,13 @@ public class TicTacToe{
     public int[] checkWinner(){
         int[][] chancePerPosition = new int[2][gameSize];
         int[] result = new int[]{-1,-1};
-        byte lastPlayer;
         if(marks == maxMarks)
             return result;
         else{
             //Check Line
             for(int lineIndex = 0; lineIndex < gameSize; lineIndex++){
-                lastPlayer = -1;
                 position:{
                     for(int columnIndex = 0; columnIndex < gameSize; columnIndex++){
-
-                        if(lastPlayer == -1 && gameGrid[lineIndex][columnIndex] != 0)
-                            lastPlayer = gameGrid[lineIndex][columnIndex];
-
-                        else if(lastPlayer != gameGrid[lineIndex][columnIndex] && gameGrid[lineIndex][columnIndex] != 0){
-                            if(lastPlayer == O)
-                                chancePerPosition[0][lineIndex] = 0;
-                            else
-                                chancePerPosition[1][lineIndex] = 0;
-                            break position;
-                        }
 
                         //Add a point to the circle
                         if(gameGrid[lineIndex][columnIndex] == O)
@@ -242,22 +228,9 @@ public class TicTacToe{
 
             //Check Column
             for(int columnIndex = 0; columnIndex < gameGrid.length; columnIndex++){
-                lastPlayer = -1;
                     //Running through the line
                     position:{
                         for(int lineIndex = 0; lineIndex < gameGrid.length; lineIndex++){
-
-                            if(lastPlayer == -1 && gameGrid[lineIndex][columnIndex] != 0)
-                                lastPlayer = gameGrid[lineIndex][columnIndex];
-    
-                            else if(lastPlayer != gameGrid[lineIndex][columnIndex] && gameGrid[lineIndex][columnIndex] != 0){
-                                if(lastPlayer == O)
-                                    chancePerPosition[0][lineIndex] = 0;
-                                else
-                                    chancePerPosition[1][lineIndex] = 0;
-                                break position;
-                            }
-    
                             //Add a point to the circle
                             if(gameGrid[lineIndex][columnIndex] == O)
                                 chancePerPosition[0][columnIndex] += 1;
@@ -273,25 +246,8 @@ public class TicTacToe{
             //If some one has winned we just return the result, don't need to check the rest
             if(result[0] == 100 || result[1] == 100)
                 return result;
-
-            lastPlayer = -1;
-            int middleIndex = (int) gameSize/2;
             //Check Primary Diagonal
             for(int lineIndex = 0; lineIndex < gameGrid.length; lineIndex++){
-                
-                if(lastPlayer == -1 && gameGrid[lineIndex][lineIndex] != 0)
-                    lastPlayer = gameGrid[lineIndex][lineIndex];
-
-                if(lastPlayer != gameGrid[lineIndex][lineIndex] && gameGrid[lineIndex][lineIndex] != 0){
-                    chancePerPosition[0][0] = -1;
-                    break;
-                }
-
-                if(lastPlayer != gameGrid[middleIndex][middleIndex] && gameGrid[middleIndex][middleIndex] != 0){
-                    chancePerPosition[0][0] = -1;
-                    break;
-                }
-
                 //Add a point to the circle
                 if(gameGrid[lineIndex][lineIndex] == O)
                     chancePerPosition[0][lineIndex] += 1;
@@ -309,20 +265,6 @@ public class TicTacToe{
 
             //Check Secondary Diagonal
             for(int line = gameGrid.length - 1; line >= 0; line--){
-
-                if(lastPlayer == -1 && gameGrid[line][gameGrid.length - 1 - line] != 0)
-                lastPlayer = gameGrid[line][gameGrid.length - 1 - line];
-
-                if(lastPlayer != gameGrid[line][gameGrid.length - 1 - line] && gameGrid[line][gameGrid.length - 1 - line] != 0){
-                    chancePerPosition[0][0] = -1;
-                    break;
-                }
-
-                if(lastPlayer != gameGrid[middleIndex][middleIndex] && gameGrid[middleIndex][middleIndex] != 0){
-                    chancePerPosition[0][0] = -1;
-                    break;
-                }
-
                 //Add a point to the circle
                 if(gameGrid[line][gameGrid.length - 1 - line] == O)
                     chancePerPosition[0][gameGrid.length - 1 - line] += 1;
