@@ -4,7 +4,7 @@ import exceptions.NoSuchVertexException;
 
 public class MiniMaxAlphaBeta {
 
-    private static final int MAX_DEPTH = 6;
+    private static final int MAX_DEPTH = 3;
 
     private MiniMaxAlphaBeta() {
     }
@@ -12,27 +12,14 @@ public class MiniMaxAlphaBeta {
     public static int miniMax(TicTacToe game, int depthValue, int valAlpha, int valBeta,
                               boolean isMax) throws NoSuchVertexException {
 
-        int[] boardVal = game.checkWinner();
+        int boardVal = game.checkWinner();
 
 
         //if ((boardVal == 1 || boardVal == 2) || depthValue == 0 || !game.anyMovesAvailable())
         //    return boardVal;
 
-        if((boardVal[0] == 100 || boardVal[1] == 100) || depthValue == 0|| !game.anyMovesAvailable()){
-            if(boardVal[0] > boardVal[1])
-                return -1 * boardVal[0];
-
-            else if(boardVal[1] > boardVal[0])
-                return boardVal[1];
-
-            else if(boardVal[0] == -1 && boardVal[1] == -1)
-                return -1;
-
-            else if(boardVal[0] == boardVal[1])
-                return -1 * boardVal[0];
-
-            else if(depthValue == 0)
-                return boardVal[0] > boardVal[1] ? -1 * boardVal[0] : boardVal[1];
+        if((boardVal == 100 || boardVal == -100) || depthValue == 0|| !game.anyMovesAvailable()){
+            return boardVal;
         }
 
         if (isMax) {

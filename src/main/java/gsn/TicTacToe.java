@@ -146,29 +146,29 @@ public class TicTacToe{
         return result;
     }
 
-    private int[] checkPercentage(int[][] chancePerPosition, int[] result){
+    private int[][] checkPercentage(int[][] chancePerPosition, int[][] result, int check){
         double sum;
         for(int lineChanceIndex = 0; lineChanceIndex < chancePerPosition.length; lineChanceIndex++){
             sum = 0;
             for(int columnChanceIndex = 0; columnChanceIndex < gameSize; columnChanceIndex++){
-                if(chancePerPosition[lineChanceIndex][columnChanceIndex] == gameSize && result[lineChanceIndex] != 100){
-                    result[lineChanceIndex] = 100;
+                if(chancePerPosition[lineChanceIndex][columnChanceIndex] == gameSize && result[lineChanceIndex][check] != 100){
+                    result[lineChanceIndex][check] = 100;
                 }
                 else{
                     sum += chancePerPosition[lineChanceIndex][columnChanceIndex]/gameSize;
                     chancePerPosition[lineChanceIndex][columnChanceIndex] = 0;
                 }
             }
-            if(result[lineChanceIndex] != 100)
-                if(result[lineChanceIndex] == -1)
-                    result[lineChanceIndex] = (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+            if(result[lineChanceIndex][check] != 100)
+                if(result[lineChanceIndex][check] == -1)
+                    result[lineChanceIndex][check] = (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
                 else
-                result[lineChanceIndex] += (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+                result[lineChanceIndex][check] += (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
         }
         return result;
     }
 
-    private int[] checkPercentageDiagonal(int[][] chancePerPosition, int[] result){
+    private int[][] checkPercentageDiagonal(int[][] chancePerPosition, int[][] result, int check){
         double sum;
         boolean chanceIsNull = false;
         for(int lineChanceIndex = 0; lineChanceIndex < chancePerPosition.length; lineChanceIndex++){
@@ -181,11 +181,11 @@ public class TicTacToe{
             }
             if(chanceIsNull)
                 sum = 0;
-            if(result[lineChanceIndex] != 100)
-                if(result[lineChanceIndex] == -1)
-                    result[lineChanceIndex] = (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+            if(result[lineChanceIndex][check] != 100)
+                if(result[lineChanceIndex][check] == -1)
+                    result[lineChanceIndex][check] = (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
                 else
-                result[lineChanceIndex] += (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+                result[lineChanceIndex][check] += (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
         }
         return result;
     }
@@ -193,16 +193,16 @@ public class TicTacToe{
     /**
      *
      * @return
-     * <code>{@value #X}</code> if cross won;
-     * <code>{@value #O}</code> if circle won;
-     * <code>-1</code> if no one won
-     * <code>-2</code> if the game ended with a tie.
+     * <code>{@value 100}</code> if cross won;
+     * <code>{@value -100}</code> if circle won;
+     * <code>0</code> if no one won
+     * <code>{@value Integer.MIN_VALUE}</code> if the game ended with a tie.
      */
-    public int[] checkWinner(){
+    public int checkWinner(){
         int[][] chancePerPosition = new int[2][gameSize];
-        int[] result = new int[]{-1,-1};
+        int[][] tempResult = new int[2][4];
         if(marks == maxMarks)
-            return result;
+            return Integer.MIN_VALUE;
         else{
             //Check Line
             for(int lineIndex = 0; lineIndex < gameSize; lineIndex++){
@@ -220,11 +220,13 @@ public class TicTacToe{
                 }
                 }
 
-                checkPercentage(chancePerPosition, result);
+                checkPercentage(chancePerPosition, tempResult, 0);
 
                 //If some one has winned we just return the result, don't need to check the rest
-                if(result[0] == 100 || result[1] == 100)
-                    return result;
+                if(tempResult[0][0] == 100)
+                    return -100;
+                else if(tempResult[1][0] == 100)
+                    return 100;
 
             //Check Column
             for(int columnIndex = 0; columnIndex < gameGrid.length; columnIndex++){
@@ -241,11 +243,13 @@ public class TicTacToe{
                         }
                     }
                 }
-            checkPercentage(chancePerPosition, result);
+            checkPercentage(chancePerPosition, tempResult, 1);
 
             //If some one has winned we just return the result, don't need to check the rest
-            if(result[0] == 100 || result[1] == 100)
-                return result;
+            if(tempResult[0][1] == 100)
+                    return -100;
+                else if(tempResult[1][1] == 100)
+                    return 100;
             //Check Primary Diagonal
             for(int lineIndex = 0; lineIndex < gameGrid.length; lineIndex++){
                 //Add a point to the circle
@@ -257,11 +261,13 @@ public class TicTacToe{
                     chancePerPosition[1][lineIndex] += 1;
             }
 
-            checkPercentageDiagonal(chancePerPosition, result);
+            checkPercentageDiagonal(chancePerPosition, tempResult, 2);
 
             //If some one has winned we just return the result, don't need to check the rest
-            if(result[0] == 100 || result[1] == 100)
-                return result;
+            if(tempResult[0][2] == 100)
+                    return -100;
+                else if(tempResult[1][2] == 100)
+                    return 100;
 
             //Check Secondary Diagonal
             for(int line = gameGrid.length - 1; line >= 0; line--){
@@ -273,16 +279,23 @@ public class TicTacToe{
                 else if(gameGrid[line][gameGrid.length - 1 - line] == X)
                     chancePerPosition[1][gameGrid.length - 1 - line] += 1;
             }
-            checkPercentageDiagonal(chancePerPosition, result);
+            checkPercentageDiagonal(chancePerPosition, tempResult, 3);
             
             //If some one has winned we just return the result, don't need to check the rest
-            if(result[0] == 100 || result[1] == 100)
-                return result;
-                
-            for(int resultIndex = 0; resultIndex < result.length; resultIndex++)
-                //Since we do 4 checks we have to divide the result by 4 to have the avarege
-                result[resultIndex] = result[resultIndex]/4;
-            return result;
+            if(tempResult[0][3] == 100)
+                    return -100;
+                else if(tempResult[1][3] == 100)
+                    return 100;
+            
+            int[] result = new int[]{0,0};
+            for(int playerIndex = 0; playerIndex < tempResult.length; playerIndex++)
+                for(int chanceIndex = 0; chanceIndex < tempResult[playerIndex].length; chanceIndex++)
+                    result[playerIndex] += tempResult[playerIndex][chanceIndex];
+
+            if(result[1] > result[0])
+                return result[1]/4;
+            else
+                return -1 * (result[0]/4);
         }
     }
 
@@ -342,6 +355,7 @@ public class TicTacToe{
         temp.changeGrid(getGrid());
         int[] line = MiniMaxAlphaBeta.getBestCoord(temp);
         return markCross(line[0]+1, line[1]+1);
+        //return true;
         /*
         printGrid();
         System.out.print("Please, input your desired location to mark (L,C or L C): ");
@@ -364,7 +378,7 @@ public class TicTacToe{
         Scanner sc = new Scanner(System.in);
         GameState state  = GameState.START;
         byte lastPlayer = -1;
-        int checkWinnerResult[] = new int[]{-2, -2};
+        int checkWinnerResult;
         byte winner = -1;
         byte playerToStart = X;
         boolean closeGame = false;
@@ -390,24 +404,24 @@ public class TicTacToe{
                         state = GameState.CLOSE;
                     break;
                 case WAIT:
-                /*
-                    if((checkWinnerResult = checkWinner())[0] == 100){
+                ///*
+                    if((checkWinnerResult = checkWinner()) == -100){
                         winner = O;
                         state = GameState.END;
                         break;
                     }
-                    else if(checkWinnerResult[1] == 100){
+                    else if(checkWinnerResult == 100){
                         winner = X;
                         state = GameState.END;
                         break;
                     }
-                    else if(checkWinnerResult[0] == -1 && checkWinnerResult[1] == -1){
+                    else if(checkWinnerResult == Integer.MIN_VALUE){
                         printGrid();
                         state = GameState.END;
                         System.out.println(Const.TIE_COLLOR + Const.TIE);
                         break;
                     }
-                    */
+                    //*/
                     if(false){
                         System.out.println("hur dur");
                     }
