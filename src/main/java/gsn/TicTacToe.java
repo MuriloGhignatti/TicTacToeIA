@@ -344,7 +344,12 @@ public class TicTacToe{
         System.out.print("Please, input your desired location to mark (L,C or L C): ");
         System.out.println("");
         String[] line = sc.nextLine().split("(\\,|\\s)");
-        return markCircle(Integer.parseInt(line[0]), Integer.parseInt(line[1]));
+        try{
+            return markCircle(Integer.parseInt(line[0]), Integer.parseInt(line[1]));
+        }
+        catch(NumberFormatException e){
+            return false;
+        }
         /*int[] line = MiniMaxAlphaBeta.getBestMove(TicTacToe.this);
         System.out.println(line[0] + " " + line[1]);
         return markCircle(line[0], line[1]);*/
