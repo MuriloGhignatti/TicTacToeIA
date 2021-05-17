@@ -4,7 +4,7 @@ import exceptions.NoSuchVertexException;
 
 public class MiniMaxAlphaBeta {
 
-    private static final int MAX_DEPTH = 7;
+    private static final int MAX_DEPTH = 3;
 
     private MiniMaxAlphaBeta() {
     }
@@ -15,8 +15,12 @@ public class MiniMaxAlphaBeta {
         int boardVal = game.checkWinner();
 
 
-        if ((boardVal == 1 || boardVal == 2) || depthValue == 0 || !game.anyMovesAvailable())
+        //if ((boardVal == 1 || boardVal == 2) || depthValue == 0 || !game.anyMovesAvailable())
+        //    return boardVal;
+
+        if((boardVal == 100 || boardVal == -100) || depthValue == 0|| !game.anyMovesAvailable()){
             return boardVal;
+        }
 
         if (isMax) {
             int highestVal = Integer.MIN_VALUE;

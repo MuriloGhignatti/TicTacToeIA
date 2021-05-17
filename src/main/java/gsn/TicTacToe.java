@@ -145,130 +145,158 @@ public class TicTacToe{
         boolean result = mark(pos1 - 1, pos2 - 1, BLANK);
         return result;
     }
+
+    private int[][] checkPercentage(int[][] chancePerPosition, int[][] result, int check){
+        double sum;
+        for(int lineChanceIndex = 0; lineChanceIndex < chancePerPosition.length; lineChanceIndex++){
+            sum = 0;
+            for(int columnChanceIndex = 0; columnChanceIndex < gameSize; columnChanceIndex++){
+                if(chancePerPosition[lineChanceIndex][columnChanceIndex] == gameSize && result[lineChanceIndex][check] != 100){
+                    result[lineChanceIndex][check] = 100;
+                }
+                else{
+                    sum += chancePerPosition[lineChanceIndex][columnChanceIndex]/gameSize;
+                    chancePerPosition[lineChanceIndex][columnChanceIndex] = 0;
+                }
+            }
+            if(result[lineChanceIndex][check] != 100)
+                if(result[lineChanceIndex][check] == -1)
+                    result[lineChanceIndex][check] = (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+                else
+                result[lineChanceIndex][check] += (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+        }
+        return result;
+    }
+
+    private int[][] checkPercentageDiagonal(int[][] chancePerPosition, int[][] result, int check){
+        double sum;
+        boolean chanceIsNull = false;
+        for(int lineChanceIndex = 0; lineChanceIndex < chancePerPosition.length; lineChanceIndex++){
+            sum = 0;
+            for(int columnChanceIndex = 0; columnChanceIndex < gameSize; columnChanceIndex++){
+                if(chancePerPosition[lineChanceIndex][columnChanceIndex] == -1)
+                    chanceIsNull = true;
+                sum += chancePerPosition[lineChanceIndex][columnChanceIndex];
+                chancePerPosition[lineChanceIndex][columnChanceIndex] = 0;
+            }
+            if(chanceIsNull)
+                sum = 0;
+            if(result[lineChanceIndex][check] != 100)
+                if(result[lineChanceIndex][check] == -1)
+                    result[lineChanceIndex][check] = (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+                else
+                result[lineChanceIndex][check] += (int)Math.round((sum/chancePerPosition[lineChanceIndex].length) * 100);
+        }
+        return result;
+    }
+
     /**
      *
      * @return
-     * <code>{@value #X}</code> if cross won;
-     * <code>{@value #O}</code> if circle won;
-     * <code>-1</code> if no one won
-     * <code>-2</code> if the game ended with a tie.
+     * <code>{@value 100}</code> if cross won;
+     * <code>{@value -100}</code> if circle won;
+     * <code>0</code> if no one won
+     * <code>{@value Integer.MIN_VALUE}</code> if the game ended with a tie.
      */
-    public byte checkWinner(){
+    public int checkWinner(){
+        int[][] chancePerPosition = new int[2][gameSize];
+        int[][] tempResult = new int[2][4];
         if(marks == maxMarks)
-            return -2;
+            return Integer.MIN_VALUE;
         else{
-            byte winner = -1;
             //Check Line
-            //Get the line
-            for(byte[] byteArray: gameGrid){
-                winner = -1;
-                //Naming my section so i can break only the inner loop
-                element: {
-                    //Running through the line
-                    for(byte currentByte: byteArray){
+            for(int lineIndex = 0; lineIndex < gameSize; lineIndex++){
+                position:{
+                    for(int columnIndex = 0; columnIndex < gameSize; columnIndex++){
 
-                        //If my current position is empty {0} the rest of the line doesn't need to be checked since in this line we can't have a winner
-                        if(currentByte == 0){
-                            winner = -1;
-                            break element;
-                        }
-                        //Used to start the comparation, this will be the first position of the line
-                        else if(winner == -1)
-                            winner = currentByte;
-                        //If our current position is different from the first we don't need to check the rest of the line since we can't have a winner here
-                        else if(currentByte != winner){
-                            winner = -1;
-                            break element;
-                        }
+                        //Add a point to the circle
+                        if(gameGrid[lineIndex][columnIndex] == O)
+                            chancePerPosition[0][lineIndex] += 1;
+
+                        //Add a point to the cross
+                        else if(gameGrid[lineIndex][columnIndex] == X)
+                            chancePerPosition[1][lineIndex] += 1;
                     }
                 }
-                if(winner == X)
-                    return X;
-                else if(winner == O)
-                    return O;
-            }
+                }
+
+                checkPercentage(chancePerPosition, tempResult, 0);
+
+                //If some one has winned we just return the result, don't need to check the rest
+                if(tempResult[0][0] == 100)
+                    return -100;
+                else if(tempResult[1][0] == 100)
+                    return 100;
 
             //Check Column
-            for(int elementColumn = 0; elementColumn < gameGrid.length; elementColumn++){
-                winner = -1;
-                //Naming my section so i can break only the inner loop
-                element: {
+            for(int columnIndex = 0; columnIndex < gameGrid.length; columnIndex++){
                     //Running through the line
-                    for(int line = 0; line < gameGrid.length; line++){
-
-                        //If my current position is empty {0} the rest of the line doesn't need to be checked since in this line we can't have a winner
-                        if(gameGrid[line][elementColumn] == 0){
-                            winner = -1;
-                            break element;
-                        }
-                        //Used to start the comparation, this will be the first position of the line
-                        else if(winner == -1)
-                            winner = gameGrid[line][elementColumn];
-                        //If our current position is different from the first we don't need to check the rest of the line since we can't have a winner here
-                        else if(gameGrid[line][elementColumn] != winner){
-                            winner = -1;
-                            break element;
+                    position:{
+                        for(int lineIndex = 0; lineIndex < gameGrid.length; lineIndex++){
+                            //Add a point to the circle
+                            if(gameGrid[lineIndex][columnIndex] == O)
+                                chancePerPosition[0][columnIndex] += 1;
+    
+                            //Add a point to the cross
+                            else if(gameGrid[lineIndex][columnIndex] == X)
+                                chancePerPosition[1][columnIndex] += 1;
                         }
                     }
                 }
-                if(winner == X)
-                    return X;
-                else if(winner == O)
-                    return O;
-            }
+            checkPercentage(chancePerPosition, tempResult, 1);
 
-            int middleElementPosition = (int)(gameGrid.length / 2);
-            winner = -1;
-
+            //If some one has winned we just return the result, don't need to check the rest
+            if(tempResult[0][1] == 100)
+                    return -100;
+                else if(tempResult[1][1] == 100)
+                    return 100;
             //Check Primary Diagonal
-            for(int line = 0; line < gameGrid.length; line++){
-                //Naming my section so i can break only the inner loop
-                if(gameGrid[middleElementPosition][middleElementPosition] == 0){
-                    winner = -1;
-                    break;
-                }
-                else if(gameGrid[line][line] != gameGrid[middleElementPosition][middleElementPosition]){
-                    winner = -1;
-                    break;
-                }
-                else if(winner == -1)
-                    winner = gameGrid[line][line];
-                else if(gameGrid[line][line] != winner){
-                    winner = -1;
-                    break;
-                }
-            }
-                if(winner == X)
-                    return X;
-                else if(winner == O)
-                    return O;
+            for(int lineIndex = 0; lineIndex < gameGrid.length; lineIndex++){
+                //Add a point to the circle
+                if(gameGrid[lineIndex][lineIndex] == O)
+                    chancePerPosition[0][lineIndex] += 1;
 
-            winner = -1;
+                //Add a point to the cross
+                else if(gameGrid[lineIndex][lineIndex] == X)
+                    chancePerPosition[1][lineIndex] += 1;
+            }
+
+            checkPercentageDiagonal(chancePerPosition, tempResult, 2);
+
+            //If some one has winned we just return the result, don't need to check the rest
+            if(tempResult[0][2] == 100)
+                    return -100;
+                else if(tempResult[1][2] == 100)
+                    return 100;
+
             //Check Secondary Diagonal
             for(int line = gameGrid.length - 1; line >= 0; line--){
-                //Naming my section so i can break only the inner loop
-                if(gameGrid[middleElementPosition][middleElementPosition] == 0){
-                    winner = -1;
-                    break;
-                }
-                else if(gameGrid[line][gameGrid.length - 1 - line] != gameGrid[middleElementPosition][middleElementPosition]){
-                    winner = -1;
-                    break;
-                }
-                else if(winner == -1)
-                    winner = gameGrid[line][gameGrid.length - 1 - line];
-                else if(gameGrid[line][gameGrid.length - 1 - line] != winner){
-                    winner = -1;
-                    break;
-                }
-            }
+                //Add a point to the circle
+                if(gameGrid[line][gameGrid.length - 1 - line] == O)
+                    chancePerPosition[0][gameGrid.length - 1 - line] += 1;
 
-            if(winner == X)
-                    return X;
-            else if(winner == O)
-                return O;
+                //Add a point to the cross
+                else if(gameGrid[line][gameGrid.length - 1 - line] == X)
+                    chancePerPosition[1][gameGrid.length - 1 - line] += 1;
+            }
+            checkPercentageDiagonal(chancePerPosition, tempResult, 3);
+            
+            //If some one has winned we just return the result, don't need to check the rest
+            if(tempResult[0][3] == 100)
+                    return -100;
+                else if(tempResult[1][3] == 100)
+                    return 100;
+            
+            int[] result = new int[]{0,0};
+            for(int playerIndex = 0; playerIndex < tempResult.length; playerIndex++)
+                for(int chanceIndex = 0; chanceIndex < tempResult[playerIndex].length; chanceIndex++)
+                    result[playerIndex] += tempResult[playerIndex][chanceIndex];
+
+            if(result[1] > result[0])
+                return result[1]/4;
+            else
+                return -1 * (result[0]/4);
         }
-        return -1;
     }
 
     private void printWinnerGrid(byte winner){
@@ -313,23 +341,26 @@ public class TicTacToe{
     }
 
     private boolean circlePlay(Scanner sc) throws NumberFormatException, NoSuchVertexException{
-        printGrid();
         System.out.print("Please, input your desired location to mark (L,C or L C): ");
         System.out.println("");
         String[] line = sc.nextLine().split("(\\,|\\s)");
-        return markCircle(Integer.parseInt(line[0]), Integer.parseInt(line[1]));
+        try{
+            return markCircle(Integer.parseInt(line[0]), Integer.parseInt(line[1]));
+        }
+        catch(NumberFormatException e){
+            return false;
+        }
         /*int[] line = MiniMaxAlphaBeta.getBestMove(TicTacToe.this);
         System.out.println(line[0] + " " + line[1]);
         return markCircle(line[0], line[1]);*/
     }
 
     private boolean crossPlay(Scanner sc) throws NumberFormatException, NoSuchVertexException, AdjacencyAlreadyExistsException, VertexAlreadyExistsException {
-        printGrid();
-
         TicTacToe temp = new TicTacToe(gameGrid.length);
         temp.changeGrid(getGrid());
         int[] line = MiniMaxAlphaBeta.getBestCoord(temp);
         return markCross(line[0]+1, line[1]+1);
+        //return true;
         /*
         printGrid();
         System.out.print("Please, input your desired location to mark (L,C or L C): ");
@@ -352,6 +383,7 @@ public class TicTacToe{
         Scanner sc = new Scanner(System.in);
         GameState state  = GameState.START;
         byte lastPlayer = -1;
+        int checkWinnerResult;
         byte winner = -1;
         byte playerToStart = X;
         boolean closeGame = false;
@@ -368,7 +400,8 @@ public class TicTacToe{
                     state = GameState.WAIT;
                     break;
                 case END:
-                    printWinnerGrid(winner);
+                    if(winner != -1)
+                        printWinnerGrid(winner);
                     System.out.print("Game ended, want to play again (Y/N)? ");
                     if(sc.nextLine().equalsIgnoreCase("Y"))
                         state = GameState.START;
@@ -376,20 +409,35 @@ public class TicTacToe{
                         state = GameState.CLOSE;
                     break;
                 case WAIT:
-                    if((winner = checkWinner()) != -1 && winner != -2)
+                ///*
+                    if((checkWinnerResult = checkWinner()) == -100){
+                        winner = O;
                         state = GameState.END;
-                    else if(lastPlayer == X)
-                        state = GameState.CIRCLE;
-                    else
-                        state = GameState.CROSS;
-                    /*System.out.println("Ready (Y/N)? ");
-                    if(sc.nextLine().equalsIgnoreCase("Y"))
-                        break;*/
-                    if(true)
                         break;
-                    else
-                        state = GameState.CLOSE;
-                    break;
+                    }
+                    else if(checkWinnerResult == 100){
+                        winner = X;
+                        state = GameState.END;
+                        break;
+                    }
+                    else if(checkWinnerResult == Integer.MIN_VALUE){
+                        printGrid();
+                        state = GameState.END;
+                        System.out.println(Const.TIE_COLLOR + Const.TIE);
+                        break;
+                    }
+                    //*/
+                    if(false){
+                        System.out.println("hur dur");
+                    }
+                    else{
+                        printGrid();
+                        if(lastPlayer == X)
+                            state = GameState.CIRCLE;
+                        else
+                            state = GameState.CROSS;
+                        break;
+                    }
                 case CLOSE:
                     System.out.println("Thanks for playing :D");
                     closeGame = true;
