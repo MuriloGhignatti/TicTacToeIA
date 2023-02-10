@@ -72,7 +72,7 @@ Project Link: [https://github.com/MuriloGhignatti/TicTacToeIA](https://github.co
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[contributors-shield]: https://img.shields.io/github/contributors/MuriloGhignatti/TicTacToeIA.svg?style=for-the-badge
+[contributors-url]: https://github.com/MuriloGhignatti/TicTacToeIA/graphs/contributors
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
+[linkedin-url]: https://www.linkedin.com/in/murilo-ghignatti-b9878517a/
